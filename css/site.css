@@ -1,0 +1,27 @@
+﻿body 
+{
+    font-family:"Segoe WPC","Segoe UI",Helvetica,Arial,"Arial Unicode MS",Sans-Serif;
+}
+.box
+{
+    width: 100%;
+    height: 100%;
+}
+.out
+{
+    width: 95px;
+    height: 95px;
+}
+.hide
+{
+    display: none;
+}
+.title
+{
+    font-size:larger;
+    font-weight:bold
+}
+img
+{
+    width:95px;
+}

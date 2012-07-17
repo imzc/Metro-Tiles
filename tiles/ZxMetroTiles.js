@@ -1,4 +1,4 @@
-﻿/// <reference path="../Scripts/jquery-1.4.1.js" />
+﻿/// <reference path="../lib/jquery.js" />
 
 var zx = zx || {};
 
@@ -14,12 +14,12 @@ $.extend(zx, {
 zx.metro.tile.Player = function (option) {
     option = option || {};
     var time = 0,
-            total = option.speed || 200,
-            steps = 20,
+            total = option.speed || 400,
+            steps = 40,
             currentStep = 0,
-            effect = option.effect || "flip",
+            effect = option.effect || "up",
             items = option.items,
-            waitTime = option.waitTime || 3000;
+            waitTime = option.waitTime || 4000;
 
     effect = zx.metro.tile.effects[effect] || zx.metro.tile.effects.flip;
     var eft = new effect(option);
@@ -27,21 +27,10 @@ zx.metro.tile.Player = function (option) {
     function move() {
         $(items[0]).css(eft.getStyle(time, total));
         $(items[1]).css(eft.getStyle(time, total, true));
+        console.log($(items[0]).text());
     };
 
-    this.play = function () {
-        go();
-        setInterval(function () {
-            if (currentStep <= 0) {
-                go();
-            }
-            else if (currentStep >= steps) {
-                back();
-            }
-        }, waitTime);
-    };
-
-    go = function () {
+    function go() {
         var timer = setInterval(function () {
             currentStep++;
             time = currentStep / steps * total;
@@ -52,7 +41,7 @@ zx.metro.tile.Player = function (option) {
     }
 
 
-    back = function () {
+    function back() {
         var timer = setInterval(function () {
             currentStep--;
             time = currentStep / steps * total;
@@ -61,6 +50,23 @@ zx.metro.tile.Player = function (option) {
                 clearInterval(timer);
         }, total / steps);
     }
+
+
+    this.play = function () {
+        var startTime = Math.random() * 3000;
+        setTimeout(function () {
+            setInterval(function () {
+                if (currentStep <= 0) {
+                    go();
+                }
+                else if (currentStep >= steps) {
+                    back();
+                }
+            }, waitTime);
+        }, startTime)
+
+        console.log(startTime)
+    };
 }
 
 zx.metro.tile.effects.flip = function (options) {
@@ -111,13 +117,63 @@ zx.metro.tile.effects.flip = function (options) {
     }
 };
 
+
+zx.metro.tile.effects.fade = function (options) {
+    isSupport();
+    this.getStyle = function (time, total, next) {
+        var o = time / total;
+
+        if (next)
+            o = 1 - o;
+        var style = {
+            opacity: o
+        };
+        return style;
+    }
+    function isSupport() {
+        return true;
+    }
+};
+
+
+zx.metro.tile.effects.up = function (options) {
+    isSupport();
+    var item = options.items[0];
+    var height = $(item).height();
+    this.getStyle = function (time, total, next) {
+        var o = time / total * Math.PI;
+        var top = (Math.cos(o) - 1) * height / 2;
+        if (next)
+            top = top + height;
+        var style = {
+            top: top
+        };
+        return style;
+    }
+    function isSupport() {
+        return true;
+    }
+};
+
 $.fn.extend({
     zxTile: function () {
-        var items = $(this).children();
-        var player = new zx.metro.tile.Player({
-            items: items
-        });
-        player.play();
+        this.each(function () {
+            var items = $(this).children();
+            var $this = $(this).css({
+                overflow: "hidden"
+            })
+            $(items).css({
+                position: "absolute",
+                top:0,
+                left:0
+            });
+            var player = new zx.metro.tile.Player({
+                items: items,
+                effect: $this.attr("data-effect") || "up",
+                waitTime: $this.attr("data-waitTime")
+            });
+            player.play();
+        })
     }
 });
 
