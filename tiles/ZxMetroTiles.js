@@ -21,7 +21,7 @@ zx.metro.tile.Player = function (option) {
             items = option.items,
             waitTime = option.waitTime || 4000;
 
-    effect = zx.metro.tile.effects[effect] || zx.metro.tile.effects.flip;
+    effect = zx.metro.tile.effects[effect] || zx.metro.tile.effects.up;
     var eft = new effect(option);
 
     function move() {
@@ -53,7 +53,7 @@ zx.metro.tile.Player = function (option) {
 
 
     this.play = function () {
-        var startTime = Math.random() * 3000;
+        var startTime = Math.random() * 2000;
         setTimeout(function () {
             setInterval(function () {
                 if (currentStep <= 0) {
@@ -126,7 +126,8 @@ zx.metro.tile.effects.fade = function (options) {
         if (next)
             o = 1 - o;
         var style = {
-            opacity: o
+            opacity: o,
+            display:""
         };
         return style;
     }
@@ -146,7 +147,8 @@ zx.metro.tile.effects.up = function (options) {
         if (next)
             top = top + height;
         var style = {
-            top: top
+            top: top,
+            display: ""
         };
         return style;
     }
@@ -164,9 +166,11 @@ $.fn.extend({
             })
             $(items).css({
                 position: "absolute",
-                top:0,
-                left:0
+                top: 0,
+                left: 0,
+                display: "none"
             });
+            items[0].style.display = "";
             var player = new zx.metro.tile.Player({
                 items: items,
                 effect: $this.attr("data-effect") || "up",
